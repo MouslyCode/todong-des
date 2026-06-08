@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a2e;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4f46e5;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .btn-add {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .todo-item {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .todo-name {
+            flex: 1;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        select {
+            padding: 6px 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        select.todo {
+            border-color: #94a3b8;
+            color: #64748b;
+        }
+
+        select.progress {
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
+        select.done {
+            border-color: #10b981;
+            color: #059669;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #ef4444;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 40px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>TodongDes</h1>
+
+        <div class="input-group">
+            <input type="text" id="todoInput" placeholder="Tambah todo baru..." />
+            <button class="btn-add" onclick="createTodo()">Tambah</button>
+        </div>
+
+        <div class="todo-list" id="todoList">
+            <p class="empty">Belum ada todo</p>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api/todos'
+
+        // Load semua todos
+        async function loadTodos() {
+            const res = await fetch(API)
+            const todos = await res.json()
+            renderTodos(todos)
+        }
+
+        // Render todos ke DOM
+        function renderTodos(todos) {
+            const list = document.getElementById('todoList')
+
+            if (!todos || todos.length === 0) {
+                list.innerHTML = '<p class="empty">Belum ada todo</p>'
+                return
+            }
+
+            list.innerHTML = todos.map(todo => `
+                <div class="todo-item" id="todo-${todo.id}">
+                    <span class="todo-name">${todo.name}</span>
+                    <select class="${todo.status}" onchange="updateStatus(${todo.id}, this.value, this)">
+                        <option value="todo"     ${todo.status === 'todo' ? 'selected' : ''}>Todo</option>
+                        <option value="progress" ${todo.status === 'progress' ? 'selected' : ''}>Progress</option>
+                        <option value="done"     ${todo.status === 'done' ? 'selected' : ''}>Done</option>
+                    </select>
+                    <button class="btn-delete" onclick="deleteTodo(${todo.id})">Hapus</button>
+                </div>
+            `).join('')
+        }
+
+        // Tambah todo baru
+        async function createTodo() {
+            const input = document.getElementById('todoInput')
+            const name = input.value.trim()
+            if (!name) return
+
+            await fetch(API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, status: 'todo' })
+            })
+
+            input.value = ''
+            loadTodos()
+        }
+
+        // Update status
+        async function updateStatus(id, status, selectEl) {
+            selectEl.className = status
+            await fetch(`${API}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            })
+        }
+
+        // Hapus todo
+        async function deleteTodo(id) {
+            await fetch(`${API}/${id}`, { method: 'DELETE' })
+            loadTodos()
+        }
+
+        // Enter untuk tambah
+        document.getElementById('todoInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') createTodo()
+        })
+
+        // Load saat halaman dibuka
+        loadTodos()
+    </script>
+</body>
+
+</html>
