@@ -38,7 +38,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASS }}
+          key: ${{ secrets.VPS_PASS }}
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd ~/todong-des
