@@ -13,9 +13,6 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	// if err := godotenv.Load(".env"); err != nil {
-	// 	log.Fatal(".env file not found")
-	// }
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		os.Getenv("DB_USER"),
