@@ -34,11 +34,12 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/todong-des-frontend:latest
 
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASS }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
             cd ~/todong-des
             docker compose -f docker-compose.prod.yml down
