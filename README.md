@@ -10,7 +10,7 @@ cd todong-des
 
 ### 2. Setup Environment
 ```bash
-cp .env.example .env
+cp .env-example .env
 ```
 
 Edit `.env`:
