@@ -1,77 +1,12 @@
 services:
-  db:
-    image: mysql:8
-    restart: always
-    container_name: todo-db
-    environment:
-      - MYSQL_ROOT_PASSWORD=secret
-      - MYSQL_DATABASE=todo_db
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
   
-  backend1:
+  backend:
     build: backend
-    container_name: todo-backend1
+    container_name: todo-backend
     env_file:
       - .env
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - app-network
-  
-  backend2:
-    build: backend
-    container_name: todo-backend2
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
-  
-  backend3:
-    build: backend
-    container_name: todo-backend3
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
-
-  frontend:
-    build: frontend
-    container_name: todo-frontend
-    networks:
-      - app-network
-  
-  nginx:
-    image: nginx:alpine
-    container_name: todo-nginx
-    ports:
-      - 80:80
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - backend1
-      - backend2
-      - backend3
-      - frontend
-    networks:
-      - app-network
-
-volumes:
-  mysql-data:
 
 networks:
   app-network:
