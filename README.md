@@ -76,8 +76,8 @@ sudo systemctl status docker
 mkdir -p ~/todong-des/nginx
 ```
 
-### Step 3 — Upload File ke VPS
-Upload `docker-compose.prod.yml` dan `nginx.conf` dari laptop:
+### Step 3 — Buat File ke VPS
+Buat`docker-compose.prod.yml` dan `nginx.conf`: 
 ```bash
 scp docker-compose.prod.yml root@IP_VPS:~/todong-des/
 scp nginx/nginx.conf root@IP_VPS:~/todong-des/nginx/
