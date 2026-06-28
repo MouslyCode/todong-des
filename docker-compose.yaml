@@ -1,7 +1,7 @@
 services:
   
   backend:
-    build: backend
+    image: mouslycode/backend:latest
     container_name: todo-backend
     env_file:
       - .env
