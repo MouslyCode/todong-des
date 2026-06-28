@@ -3,6 +3,7 @@ services:
   backend:
     image: mouslycode/todong-des-server:latest
     container_name: todong-des-server
+    restart: always
     ports:
       - "8080:8080"
     env_file:
