@@ -1,7 +1,7 @@
 services:
   
   backend:
-    build: backend
+    image: mouslycode/todong-des-server:latest
     container_name: todong-des-server
     ports:
       - "8080:8080"
