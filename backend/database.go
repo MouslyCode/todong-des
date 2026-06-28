@@ -1,12 +1,15 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
-	"gorm.io/driver/mysql"
+	"github.com/go-sql-driver/mysql"
+	gormmysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -14,7 +17,17 @@ var DB *gorm.DB
 
 func Connect() {
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	rootCertPool := x509.NewCertPool()
+	pem, errs := os.ReadFile("./global-bundle.pem")
+	if errs != nil {
+		log.Fatalf("Failed to read cert: %v", errs)
+	}
+	rootCertPool.AppendCertsFromPEM(pem)
+	mysql.RegisterTLSConfig("rds", &tls.Config{
+		RootCAs: rootCertPool,
+	})
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&tls=rds",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
@@ -24,7 +37,7 @@ func Connect() {
 
 	var err error
 	for i := 0; i < 10; i++ {
-		DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		DB, err = gorm.Open(gormmysql.Open(dsn), &gorm.Config{})
 		if err == nil {
 			break
 		}

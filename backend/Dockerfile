@@ -14,5 +14,6 @@ FROM alpine:latest
 WORKDIR /app
 
 COPY --from=build /app/main .
+COPY global-bundle.pem .
 
 CMD ["./main"]
